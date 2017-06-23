@@ -24,3 +24,5 @@ Now run the file and the mfcc.npy files are stored in the "mfccnpyFiles" folder
 
 WORK TO DO LATER ON:
 Use the transfer code as a standard fuction to do transferring of any file type passed as an argument.
+Use MLBox
+See what is filterbank
