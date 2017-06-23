@@ -23,7 +23,12 @@ htmlfiles = [os.path.join(root, name)
              for name in files
              if name.endswith((".WAV"))]
 
-
+count=0
 for file in htmlfiles:
-    print (file)
-    copyfile(file,"./WAVFiles/"+file.split('/')[-1])
+    fullFilename = os.path.join(file)
+    filenameNoSuffix =  os.path.splitext(fullFilename)[0]
+    labelFilename = "./WAVFiles/" + filenameNoSuffix.split('/')[-2]+'-'+filenameNoSuffix.split('/')[-1]+'.WAV'
+    print (labelFilename)
+    copyfile(file,labelFilename)
+    count+=1
+    print (count)
