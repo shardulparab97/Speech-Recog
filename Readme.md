@@ -33,3 +33,16 @@ STATISTICS:
 Total time to read data from the mfccnpy files+ phonemelabel files is:
     Without buffer(first read) : 33s
     With next try: 6s
+    
+CHALLENGES:
+The number of phonemes in every utterance are different.
+
+IMPORTANT FUNCTIONS:
+FROM zzw922cn:
+output_to_sequence in utils/utils.py
+
+INITIAL SETUP FOR THE NETWORK:
+The network is defined as:
+- One LSTM layer `rnn.LSTMCell` with 100 units, completed by a softmax.
+- Batch size of 1.
+- Momentum Optimizer with learning rate of 0.005 and momentum of 0.9.
