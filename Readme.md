@@ -4,10 +4,10 @@ Example storing all the .WAV files in one folder. Here it is WAVFiles Folder.
 
 2)Run the bash script to convert it into a format which can be understood by python_speech_feaures
 
-    for file in ./WAVFiles/*
-    do
-        sox "$file" -e signed-integer "$file" >> results.out
-    done
+for file in ./WAVFiles/*
+do
+    sox "$file" -e signed-integer "$file" >> results.out
+done
 
 3)#Now run wav2mfcc.py in order to convert the .WAV files in the /WAVFiles folder and convert it to mfcc and store it in the
   #"mfcc" folder.
@@ -40,9 +40,19 @@ The number of phonemes in every utterance are different.
 IMPORTANT FUNCTIONS:
 FROM zzw922cn:
 output_to_sequence in utils/utils.py
+utils/calPer.py - very important for sparse_tensor_to_seq_list
 
 INITIAL SETUP FOR THE NETWORK:
 The network is defined as:
 - One LSTM layer `rnn.LSTMCell` with 100 units, completed by a softmax.
 - Batch size of 1.
 - Momentum Optimizer with learning rate of 0.005 and momentum of 0.9.
+
+OBSERVATIONS:
+(1) is zzw922n,(2) is philipperemy
+- 1 used 39 phonemes but has only 30 classes
+- has straightforward used character wise classification
+
+QUESTIONS:
+- Usage of sparse tensors for ctc loss
+- what is ctc_greedy_decoder for accuracy??
