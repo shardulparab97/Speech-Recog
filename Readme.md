@@ -24,5 +24,12 @@ Now run the file and the mfcc.npy files are stored in the "mfccnpyFiles" folder
 
 WORK TO DO LATER ON:
 Use the transfer code as a standard fuction to do transferring of any file type passed as an argument.
-Use MLBox
-See what is filterbank
+
+OTHER FILES:
+1)Test1.py shows how to use the mfccnpy and phonemeLabel folders and take their files and choose files with the same name, take
+ out the numpy arrays which can be then used as input and output
+
+STATISTICS:
+Total time to read data from the mfccnpy files+ phonemelabel files is:
+    Without buffer(first read) : 33s
+    With next try: 6s
