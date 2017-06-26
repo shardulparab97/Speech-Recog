@@ -4,10 +4,10 @@ Example storing all the .WAV files in one folder. Here it is WAVFiles Folder.
 
 2)Run the bash script to convert it into a format which can be understood by python_speech_feaures
 
-for file in ./WAVFiles/*
-do
-    sox "$file" -e signed-integer "$file" >> results.out
-done
+    for file in ./WAVFiles/*
+    do
+        sox "$file" -e signed-integer "$file" >> results.out
+    done
 
 3)#Now run wav2mfcc.py in order to convert the .WAV files in the /WAVFiles folder and convert it to mfcc and store it in the
   #"mfcc" folder.
