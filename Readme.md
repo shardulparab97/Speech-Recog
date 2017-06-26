@@ -23,7 +23,11 @@ Now run the file and the mfcc.npy files are stored in the "mfccnpyFiles" folder
 
 
 WORK TO DO LATER ON:
-Use the transfer code as a standard fuction to do transferring of any file type passed as an argument.
+- Use the transfer code as a standard fuction to do transferring of any file type passed as an argument.
+- Randomizing selection of files
+- Working with more than one batch
+- Compare decoding of both repos
+- [ ] (priority)CTC beam decoder
 
 OTHER FILES:
 1)Test1.py shows how to use the mfccnpy and phonemeLabel folders and take their files and choose files with the same name, take
