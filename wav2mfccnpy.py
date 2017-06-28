@@ -49,7 +49,8 @@ def function2(rootdir,label_dir):#This function makes a dictionary of the phonem
                     (rate,sig) = wav.read(fullFilename)
 
         # get mfcc
-                    mfcc_feat = mfcc(sig,rate)
+                    mfcc_feat = mfcc(sig,rate,winlen=0.005,winstep=0.001)
+                    print (np.shape(mfcc_feat))
                     count+=1
                     print ("File index:",count)
                     #important Line
