@@ -85,7 +85,7 @@ Try to make number of frames/time-steps > number of target_labels, your code sho
 I would like to help further, could you please send me a link of your code.
 (IN our case use more frames than the number of target labels , say here in one file 37 phonemes ,so number of frames have to be > than 37)
 
-#PART 2:
+# PART 2:
 Converting words to npy files and storing in folder
 
 Run transferText.py to store all the text in the .TXT files as .npy files in the folder Text_Targets
