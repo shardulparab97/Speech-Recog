@@ -28,6 +28,7 @@ WORK TO DO LATER ON:
 - Working with more than one batch
 - Compare decoding of both repos
 - [ ] (priority)CTC beam decoder
+- [X] Check why we have sparse placeholder for targets- Found out :CTC loss needs a sparse tensor
 
 OTHER FILES:
 1)Test1.py shows how to use the mfccnpy and phonemeLabel folders and take their files and choose files with the same name, take
@@ -60,3 +61,31 @@ OBSERVATIONS:
 QUESTIONS:
 - Usage of sparse tensors for ctc loss
 - what is ctc_greedy_decoder for accuracy??
+
+- Very Imporant:
+Question on stack overflow-
+
+I am getting an the following InvalidArgumentError using ctc-loss function in Tensorflow 1.2.0-rc0
+InvalidArgumentError (see above for traceback): label SparseTensor is not valid: indices[7] = [0,7] is out of bounds: need 0 <= index < [1,7]
+         [[Node: loss/CTCLoss = CTCLoss[ctc_merge_repeated=true, ignore_longer_outputs_than_inputs=false, preprocess_collapse_repeated=false, _device="/job:localhost/replica:0/task:0/cpu:0"](output_fc/BiasAdd/_91, _arg_labels/indices_0_1, _arg_labels/values_0_3, seq_len/Cast/_93)]]
+         [[Node: loss/CTCLoss/_103 = _Recv[client_terminated=false, recv_device="/job:localhost/replica:0/task:0/gpu:0", send_device="/job:localhost/replica:0/task:0/cpu:0", send_device_incarnation=1, tensor_name="edge_103_loss/CTCLoss", tensor_type=DT_FLOAT, _device="/job:localhost/replica:0/task:0/gpu:0"]()]]
+         
+Label SparseTensor is not valid: indices[7] = [0,7] is out of bounds: need 0 <= index < [1,7]
+SOLUTION BY ME:
+I have been facing the problem: The error means that
+
+Your 0th dimension should have a value less than 1 i.e. value only 0 can work.
+The 1st dimension should have values less than 7 i.e. values can lie only between 0 and 6.
+That is why it begins crashing from indices[7] since its 1st dimension's value is 7 which is greater than 6.
+
+Further, I suppose the problem is being caused because the number of frames(the time-step dimension) has a value which is less than the number of target_labels being sent to the ctc_loss function.
+
+Try to make number of frames/time-steps > number of target_labels, your code should definitely work!
+
+I would like to help further, could you please send me a link of your code.
+(IN our case use more frames than the number of target labels , say here in one file 37 phonemes ,so number of frames have to be > than 37)
+
+#PART 2:
+Converting words to npy files and storing in folder
+
+Run transferText.py to store all the text in the .TXT files as .npy files in the folder Text_Targets
