@@ -87,9 +87,13 @@ Try to make number of frames/time-steps > number of target_labels, your code sho
 I would like to help further, could you please send me a link of your code.
 (IN our case use more frames than the number of target labels , say here in one file 37 phonemes ,so number of frames have to be > than 37)
 
+<<<<<<< HEAD
 - non-null label error:
 increase the number of classes by 1, because it needs len(dictionary)+1 as number of classes
 #PART 2:
+=======
+# PART 2:
+>>>>>>> bceedbb0d5faf3c2ce405ab7b217e28880245fd6
 Converting words to npy files and storing in folder
 
 Run transferText.py to store all the text in the .TXT files as .npy files in the folder Text_Targets
