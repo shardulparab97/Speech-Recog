@@ -8,10 +8,13 @@ import shutil
 from numpy import matrix
 from tensorflow.python.ops import ctc_ops as ctc
 import argparse
+import glob
+import pickle
 
 import argparse
 parser = argparse.ArgumentParser()
-parser.add_argument("--act")
+parser.add_argument("--action")
+parser.add_argument("--model_no",default="0")
 parser.parse_args()
 args = parser.parse_args()
 #print(args.act)
@@ -36,6 +39,7 @@ def build_dataset(words):
     dictionary = dict()
     for word in list_val:
         dictionary[word] = len(dictionary) #Basically assigns a number to each word
+    dictionary={'e': 0, 'u': 1, 'h': 24, 'v': 14, 'w': 15, 'j': 2, 'n': 16, 'y': 3, 'b': 4, 't': 18, 'a': 19, 'm': 5, 'x': 23, 'p': 20, 'c': 21, 'g': 6, ' ': 22, 'z': 7, 'r': 8, 'f': 9, 'k': 10, 's': 11, 'q': 25, 'd': 12, 'i': 26, 'l': 17, 'o': 13}
     reverse_dictionary = dict(zip(dictionary.values(), dictionary.keys()))
     return dictionary, reverse_dictionary
 
@@ -43,7 +47,7 @@ def build_dataset(words):
 data=read_data()
 dictionary,reverse_dictionary=build_dataset(data)
 print(dictionary)
-dictionary={'e': 0, 'u': 1, 'h': 24, 'v': 14, 'w': 15, 'j': 2, 'n': 16, 'y': 3, 'b': 4, 't': 18, 'a': 19, 'm': 5, 'x': 23, 'p': 20, 'c': 21, 'g': 6, ' ': 22, 'z': 7, 'r': 8, 'f': 9, 'k': 10, 's': 11, 'q': 25, 'd': 12, 'i': 26, 'l': 17, 'o': 13}
+#dictionary={'e': 0, 'u': 1, 'h': 24, 'v': 14, 'w': 15, 'j': 2, 'n': 16, 'y': 3, 'b': 4, 't': 18, 'a': 19, 'm': 5, 'x': 23, 'p': 20, 'c': 21, 'g': 6, ' ': 22, 'z': 7, 'r': 8, 'f': 9, 'k': 10, 's': 11, 'q': 25, 'd': 12, 'i': 26, 'l': 17, 'o': 13}
 print(len(dictionary))
 
 n_classes=28
@@ -161,22 +165,39 @@ config = tf.ConfigProto()
 config.gpu_options.allow_growth=True
 saver = tf.train.Saver(tf.global_variables())
 init=tf.global_variables_initializer()
-
+starting_epoch=0
 def train():
     with tf.Session(config=config) as sess:
-            if(args.act=='r'):
+            if(args.model_no=="0"):
+                print("RUNNING FROM BEGINNING FROM BEGINNING")
+                starting_epoch=0
+            else:
+                starting_epoch=int(args.model_no)
+
+            list_of_files = glob.glob('./saver/*') # * means all if need specific format then *.csv
+            latest_file_no=0
+            if(len(list_of_files)!=0):
+                latest_file = max(list_of_files, key=os.path.getctime)
+                latest_file_no=latest_file.split(".meta")[0].split("-")[-1].split(".ckpt")[0]
+            if(starting_epoch>int(latest_file_no)):
+                print ("Starting epoch value greater than available epochs. Starting from last epoch run")
+                starting_epoch=int(latest_file_no)
+
+            if(args.action=='r'):
                 sess.run(init)
-                saver.restore(sess,"./saver/model.ckpt")
+                save_path="./saver/model-"+str(starting_epoch)+".ckpt"
+                saver.restore(sess,save_path)
                 print("Restored")
+                starting_epoch+=1
                 print(sess.run(weights['out']))
-            elif(args.act=='s'):
+            elif(args.action=='s'):
                 sess.run(init)
             writer.add_graph(sess.graph)
             mfcc_files = [os.path.join(root, name) for root, dirs, files in os.walk('mfccnpyFiles') for name in files
              if name.endswith((".npy"))]
             text_targets=[os.path.join(root, name) for root, dirs, files in os.walk('Text_Targets') for name in files
              if name.endswith((".npy"))]
-            for curr_epoch in range(n_epochs):
+            for curr_epoch in range(starting_epoch,n_epochs):
                 train_cost=train_ler=0
                 count_files=0
                 for file in mfcc_files:
@@ -208,9 +229,10 @@ def train():
                             target_index,target_values,target_shapes = sparse_tuple_from(train_targets)
                             feed = {inputs: train_inputs,target_idx:target_index,target_vals:target_values,target_shape:target_shapes,seq_len: train_seq_len}
                             summary,batch_cost, _ = sess.run([merged, cost, optimizer], feed)
-                            writer.add_summary(summary, count_files)
+                            #writer.add_summary(summary, count_files)
 
                             train_cost += batch_cost * batch_size
+                            ler_cost=0
                             print('Truth:\n' + convert_to_sequence(train_targets))
                             print('Output:\n' + convert_to_sequence(sess.run(decoded[0].values,feed_dict=feed)))
                             #print("Decoded Values: " ,sess.run(decoded[0].values,feed_dict=feed))
@@ -219,17 +241,21 @@ def train():
                             print("Batch Cost {0} after {1} file ,in epoch {2}\n".format(batch_cost,count_files,curr_epoch))
                             print("LER {0} after {1} file ,in epoch {2}\n".format(train_ler,count_files,curr_epoch))
                             if(count_files==6300):
-                                train_cost=(train_cost/6300)
-                                tf.summary.scalar('Train_Cost',cost)
+                                train_cost_per_epoch=(train_cost/6300)
+                                ler_cost=train_ler/6300
+                                tf.summary.scalar('Train_Cost',train_cost_per_epoch)
+                                tf.summary.scalar('Train LER',ler_cost)
                                 writer.add_summary(summary, curr_epoch)
 
 
                         if(count>=1):
                             break
-                save_path="./saver/model-"+curr_epoch+".ckpt"
+                save_path="./saver/model-"+str(curr_epoch)+".ckpt"
                 print(" Train Cost: {0} in Epoch {1} ".format((train_cost),curr_epoch))
+                print(" Training LER: {0} in Epoch {1} ".format((ler_cost),curr_epoch))
                 saver.save(sess,save_path)
                 print("Model saved ")
 
 
 
+train()
