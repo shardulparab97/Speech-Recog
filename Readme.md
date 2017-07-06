@@ -15,6 +15,7 @@ done
 Instead run wav2mfccnpy.py which stores the .WAV files as mfcc numpy arrays which can be easily saved and restored as numpy array.
 Now run the file and the mfcc.npy files are stored in the "mfccnpyFiles" folder
  Each of the npy files contains a numpy array of size 9X13(9 frames X 13 features)
+ instead increase it by breaking properly
 4)phonemeFiles has all the phoneme file together from TIMIT.
 
 5)phonemeLabels is the folder which has the phonemes from the phoneme files mapped according to the phoneme dictionary.(6300 files)
@@ -27,8 +28,9 @@ WORK TO DO LATER ON:
 - Randomizing selection of files
 - Working with more than one batch
 - Compare decoding of both repos
-- [ ] (priority)CTC beam decoder
+- [X] (priority)CTC beam decoder
 - [X] Check why we have sparse placeholder for targets- Found out :CTC loss needs a sparse tensor
+
 
 OTHER FILES:
 1)Test1.py shows how to use the mfccnpy and phonemeLabel folders and take their files and choose files with the same name, take
@@ -85,7 +87,20 @@ Try to make number of frames/time-steps > number of target_labels, your code sho
 I would like to help further, could you please send me a link of your code.
 (IN our case use more frames than the number of target labels , say here in one file 37 phonemes ,so number of frames have to be > than 37)
 
+- non-null label error:
+increase the number of classes by 1, because it needs len(dictionary)+1 as number of classes
 #PART 2:
 Converting words to npy files and storing in folder
 
 Run transferText.py to store all the text in the .TXT files as .npy files in the folder Text_Targets
+# PART 3
+wav_to_word.py
+
+# WHY CHARACTERS ARE BETTER:
+
+When output is empty, with using words' dictionary, error is low(very around 60-80)
+When output is empty, with using characters' dictionary, error is high(very around 150-200- preferred)
+
+Found out that mayb 2 layers speeds it up
+
+
